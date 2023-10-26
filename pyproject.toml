@@ -1,10 +1,10 @@
 [project]
 name = "htmltabs"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
     {name = "Michael Kaufman", email = "mlkaufman@gmail.com"},
 ]
-description = "A cli tool to merge HTML files into a single HTML file with tabs."
+description = "A CLI tool to merge HTML files into a single HTML file with tabs."
 readme = "README.md"
 requires-python = ">=3.11"
 
