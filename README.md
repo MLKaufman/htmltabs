@@ -21,6 +21,14 @@ pipx install git+https://github.com/MLKaufman/htmltabs
 Once installed can be run using the command:
 `htmltabs`
 
+### UVX
+
+The easiest possible way to run with `uvx`. Similar to `pipx`, `uvx` allows you to install and run Python packages in isolated environments without polluting your global Python environment.
+
+```
+uvx git+https://github.com/MLKaufman/htmltabs
+```
+
 ### UV
 Alternatively, you can install it using `uv` (Universal Virtual Environment) which is a cross-platform tool for managing Python environments.
 
@@ -31,9 +39,6 @@ uv run htmltabs
 ```
 
 ## Usage
-
-
-## Example Usage
 
 ```
  Usage: htmltabs [OPTIONS] DIRECTORY_PATH [OUTPUT_FILE]                                                  
