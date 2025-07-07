@@ -12,7 +12,7 @@ console = Console()
 @app.command()
 def merge_html(
     directory_path: str = typer.Argument(..., help="Directory containing HTML files"),
-    output_file: str = typer.Argument("merged.html", help="Name of the merged HTML output file"),
+    output_file: Optional[str] = typer.Argument(None, help="Name of the merged HTML output file"),
     
     # File filtering options
     pattern: str = typer.Option("*.html", "--pattern", "-p", help="File pattern to match (e.g., '*.html', '*.htm')"),
@@ -36,7 +36,10 @@ def merge_html(
     
     # Tab naming
     use_full_path: bool = typer.Option(False, "--full-path", help="Use full file path as tab name instead of just filename"),
-    strip_extensions: bool = typer.Option(True, "--strip-ext/--keep-ext", help="Strip file extensions from tab names")
+    strip_extensions: bool = typer.Option(True, "--strip-ext/--keep-ext", help="Strip file extensions from tab names"),
+    
+    # Document metadata
+    title: Optional[str] = typer.Option(None, "--title", help="Set the HTML title of the merged document")
 ):
     """
     Merge HTML files into a single HTML file with tabs.
@@ -44,6 +47,10 @@ def merge_html(
     This tool scans a directory for HTML files and combines them into a single
     HTML file with a tabbed interface for easy navigation between the original files.
     """
+    
+    # Set default output file if not provided
+    if output_file is None:
+        output_file = "merged.html"
     
     if quiet and verbose:
         console.print("[red]Error: Cannot use both --quiet and --verbose flags[/red]")
@@ -116,13 +123,16 @@ def merge_html(
         log(f"\n[blue]Output would be saved to: {output_file}[/blue]")
         return
     
+    # Set document title
+    doc_title = title if title else "Merged HTML Tabs"
+    
     # Initialize merged HTML structure
-    merged_soup = BeautifulSoup("""
+    merged_soup = BeautifulSoup(f"""
     <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Merged HTML Tabs</title>
+        <title>{doc_title}</title>
       </head>
       <body>
         <div id="tab-container">

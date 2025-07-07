@@ -68,7 +68,7 @@ htmltabs ./data --pattern "*.htm" --exclude "*temp*" --exclude "*draft*"
 | Argument | Description | Default |
 |----------|-------------|---------|
 | `DIRECTORY_PATH` | Directory containing HTML files (required) | - |
-| `OUTPUT_FILE` | Name of the merged HTML output file | `merged.html` |
+| `OUTPUT_FILE` | Name of the merged HTML output file (optional) | `merged.html` |
 
 ### File Filtering Options
 
@@ -109,6 +109,12 @@ htmltabs ./data --pattern "*.htm" --exclude "*temp*" --exclude "*draft*"
 | `--full-path` | Use full file path as tab name instead of just filename | `False` |
 | `--strip-ext/--keep-ext` | Strip/keep file extensions from tab names | `True` (strip) |
 
+### Document Metadata
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--title` | Set the HTML title of the merged document | `Merged HTML Tabs` |
+
 ### Advanced Examples
 
 ```bash
@@ -129,4 +135,7 @@ htmltabs ./nested --recursive --full-path --keep-ext
 
 # Force overwrite existing output with quiet mode
 htmltabs ./data combined.html --force --quiet
+
+# Set custom title and use specific output file
+htmltabs ./reports dashboard.html --title "Analytics Dashboard - Q4 2024"
 ```
