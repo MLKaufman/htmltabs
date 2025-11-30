@@ -36,7 +36,10 @@ def merge_html(
     
     # Tab naming
     use_full_path: bool = typer.Option(False, "--full-path", help="Use full file path as tab name instead of just filename"),
-    strip_extensions: bool = typer.Option(True, "--strip-ext/--keep-ext", help="Strip file extensions from tab names")
+    strip_extensions: bool = typer.Option(True, "--strip-ext/--keep-ext", help="Strip file extensions from tab names"),
+    
+    # Advanced options
+    use_iframe: bool = typer.Option(False, "--iframe", help="Embed files using iframes (better for complex reports with JS/CSS)")
 ):
     """
     Merge HTML files into a single HTML file with tabs.
@@ -133,18 +136,19 @@ def merge_html(
     </html>
     """, 'html.parser')
 
-    # Deduplicate styles/scripts
-    seen_blocks = set()
-    for filepath in files:
-        verbose_log(f"Scanning for styles/scripts: [dim]{os.path.relpath(filepath, directory_path)}[/dim]")
-        with open(filepath, "r", encoding='utf-8', errors='ignore') as f:
-            soup = BeautifulSoup(f.read(), 'html.parser')
-            if soup.head:
-                for tag in soup.head.find_all(["style", "link", "script"]):
-                    tag_str = str(tag)
-                    if tag_str not in seen_blocks:
-                        merged_soup.head.append(tag)
-                        seen_blocks.add(tag_str)
+    # Deduplicate styles/scripts (only if not using iframes)
+    if not use_iframe:
+        seen_blocks = set()
+        for filepath in files:
+            verbose_log(f"Scanning for styles/scripts: [dim]{os.path.relpath(filepath, directory_path)}[/dim]")
+            with open(filepath, "r", encoding='utf-8', errors='ignore') as f:
+                soup = BeautifulSoup(f.read(), 'html.parser')
+                if soup.head:
+                    for tag in soup.head.find_all(["style", "link", "script"]):
+                        tag_str = str(tag)
+                        if tag_str not in seen_blocks:
+                            merged_soup.head.append(tag)
+                            seen_blocks.add(tag_str)
 
     # Process each file
     for i, filepath in enumerate(files):
@@ -158,19 +162,32 @@ def merge_html(
         tab_class = "tab active" if i == 0 else "tab"
         content_div = merged_soup.new_tag("div", id=tab_id, **{"class": tab_class})
 
-        # Extract body content or entire content if no body tag
-        content_html = ""
-        if soup.body:
-            content_html = "".join(str(element) for element in soup.body.contents if str(element).strip())
+        if use_iframe:
+             # Use iframe with srcdoc
+            with open(filepath, "r", encoding='utf-8', errors='ignore') as f:
+                file_content = f.read()
+            
+            # Create iframe
+            iframe = merged_soup.new_tag("iframe", srcdoc=file_content, **{
+                "class": "tab-iframe",
+                "frameborder": "0",
+                "sandbox": "allow-scripts allow-same-origin allow-popups allow-forms"
+            })
+            content_div.append(iframe)
         else:
-            content_html = "".join(str(element) for element in soup.contents if str(element).strip())
-        
-        # Parse and append the content
-        if content_html.strip():
-            parsed_content = BeautifulSoup(content_html, 'html.parser')
-            for element in parsed_content:
-                if str(element).strip():
-                    content_div.append(element)
+            # Extract body content or entire content if no body tag
+            content_html = ""
+            if soup.body:
+                content_html = "".join(str(element) for element in soup.body.contents if str(element).strip())
+            else:
+                content_html = "".join(str(element) for element in soup.contents if str(element).strip())
+            
+            # Parse and append the content
+            if content_html.strip():
+                parsed_content = BeautifulSoup(content_html, 'html.parser')
+                for element in parsed_content:
+                    if str(element).strip():
+                        content_div.append(element)
 
         merged_soup.select_one("#tab-contents").append(content_div)
 
@@ -266,7 +283,10 @@ def get_theme_styles(theme: str, tab_position: str) -> str:
         layout_css = """
         #tab-container { display: flex; flex-direction: column; height: 100vh; }
         #tab-buttons { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px; border-bottom: 1px solid #ddd; }
-        #tab-contents { flex: 1; overflow: auto; }
+        #tab-contents { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+        .tab { flex: 1; display: none; flex-direction: column; }
+        .tab.active { display: flex; }
+        .tab-iframe { width: 100%; height: 100%; border: none; flex: 1; }
         """
     
     # Theme-specific styles
