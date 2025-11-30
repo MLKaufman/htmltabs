@@ -226,6 +226,17 @@ def merge_html(
     style_tag.string = base_styles
     merged_soup.head.append(style_tag)
 
+    # Add iframe-specific styling to ensure full height
+    if use_iframe:
+        iframe_style = merged_soup.new_tag("style")
+        iframe_style.string = """
+        #tab-contents { overflow: hidden; display: flex; flex-direction: column; }
+        .tab { flex: 1; display: none; flex-direction: column; padding: 0; }
+        .tab.active { display: flex; }
+        .tab-iframe { width: 100%; height: 100%; border: none; flex: 1; }
+        """
+        merged_soup.head.append(iframe_style)
+
     # Tab switching script
     script_tag = merged_soup.new_tag("script")
     script_tag.string = """
@@ -283,10 +294,7 @@ def get_theme_styles(theme: str, tab_position: str) -> str:
         layout_css = """
         #tab-container { display: flex; flex-direction: column; height: 100vh; }
         #tab-buttons { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px; border-bottom: 1px solid #ddd; }
-        #tab-contents { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-        .tab { flex: 1; display: none; flex-direction: column; }
-        .tab.active { display: flex; }
-        .tab-iframe { width: 100%; height: 100%; border: none; flex: 1; }
+        #tab-contents { flex: 1; overflow: auto; }
         """
     
     # Theme-specific styles
