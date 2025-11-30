@@ -1,0 +1,87 @@
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Merged HTML Tabs</title>
+<style>
+        #tab-container { display: flex; flex-direction: column; height: 100vh; }
+        #tab-buttons { display: flex; gap: 10px; flex-wrap: wrap; padding: 10px; border-bottom: 1px solid #ddd; }
+        #tab-contents { flex: 1; overflow: auto; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0; padding: 0; 
+            background-color: #ffffff; 
+            color: #333;
+        }
+        .tab-button {
+            padding: 10px 20px; border: none; border-radius: 8px;
+            background-color: #f8f9fa; color: #495057; cursor: pointer;
+            font-size: 14px; font-weight: 500; 
+            transition: all 0.3s ease;
+        }
+        .tab-button:hover { background-color: #007BFF; color: white; transform: translateY(-1px); }
+        .tab-button.active { background-color: #0056b3; color: white; }
+        .tab { display: none; padding: 20px; }
+        .tab.active { display: block; }
+        #tab-buttons { background-color: #f8f9fa; }
+        </style></head>
+<body>
+<div id="tab-container">
+<div id="tab-buttons"><button class="tab-button" onclick="showTab('tab1', this)" title="file1.html">file1</button><button class="tab-button" onclick="showTab('tab2', this)" title="file2.html">file2</button></div>
+<div id="tab-contents"><div class="tab active" id="tab1"><iframe class="tab-iframe" frameborder="0" sandbox="allow-scripts allow-same-origin allow-popups allow-forms" srcdoc='
+        &lt;html&gt;
+        &lt;head&gt;
+            &lt;style&gt;
+                body { background-color: #ffcccc; }
+                #content { color: red; font-weight: bold; }
+            &lt;/style&gt;
+            &lt;script&gt;
+                var uniqueData = "File 1 Data";
+                console.log("Loaded " + uniqueData);
+            &lt;/script&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+            &lt;h1&gt;Report 1&lt;/h1&gt;
+            &lt;div id="content"&gt;This is content from File 1.&lt;/div&gt;
+            &lt;script&gt;
+                document.getElementById("content").innerText += " (JS Modified)";
+            &lt;/script&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;
+        '></iframe></div><div class="tab" id="tab2"><iframe class="tab-iframe" frameborder="0" sandbox="allow-scripts allow-same-origin allow-popups allow-forms" srcdoc='
+        &lt;html&gt;
+        &lt;head&gt;
+            &lt;style&gt;
+                body { background-color: #ccccff; }
+                #content { color: blue; font-style: italic; }
+            &lt;/style&gt;
+            &lt;script&gt;
+                var uniqueData = "File 2 Data";
+                console.log("Loaded " + uniqueData);
+            &lt;/script&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+            &lt;h1&gt;Report 2&lt;/h1&gt;
+            &lt;div id="content"&gt;This is content from File 2.&lt;/div&gt;
+            &lt;script&gt;
+                document.getElementById("content").innerText += " (JS Modified)";
+            &lt;/script&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;
+        '></iframe></div></div>
+</div>
+<script>
+    function showTab(tabId, button) {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        button.classList.add('active');
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+        const firstButton = document.querySelector('.tab-button');
+        if (firstButton) firstButton.classList.add('active');
+    });
+    </script></body>
+</html>

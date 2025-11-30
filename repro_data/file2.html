@@ -1,0 +1,21 @@
+
+        <html>
+        <head>
+            <style>
+                body { background-color: #ccccff; }
+                #content { color: blue; font-style: italic; }
+            </style>
+            <script>
+                var uniqueData = "File 2 Data";
+                console.log("Loaded " + uniqueData);
+            </script>
+        </head>
+        <body>
+            <h1>Report 2</h1>
+            <div id="content">This is content from File 2.</div>
+            <script>
+                document.getElementById("content").innerText += " (JS Modified)";
+            </script>
+        </body>
+        </html>
+        
