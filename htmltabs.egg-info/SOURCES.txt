@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+htmltabs/__init__.py
+htmltabs/htmltabs.py
+htmltabs.egg-info/PKG-INFO
+htmltabs.egg-info/SOURCES.txt
+htmltabs.egg-info/dependency_links.txt
+htmltabs.egg-info/entry_points.txt
+htmltabs.egg-info/requires.txt
+htmltabs.egg-info/top_level.txt
