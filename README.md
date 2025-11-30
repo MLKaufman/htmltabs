@@ -1,41 +1,45 @@
 # htmltabs
 
-A CLI tool to merge HTML files into a single HTML file with tabs. Mainly useful for concatenanting data analysis reports generated with Jupyter Lab or Rmarkdown.
+A CLI tool to merge HTML files into a single HTML file with tabs. Perfect for combining data analysis reports generated with Jupyter Lab, R Markdown, or complex bioinformatics reports like Cell Ranger outputs.
+
+## Features
+
+- 📁 **Flexible File Selection**: Pattern matching, exclusions, and recursive directory scanning
+- 🎨 **Multiple Themes**: Built-in dark, minimal, and default themes
+- 📐 **Customizable Layout**: Position tabs on any side (top, bottom, left, right)
+- 🔒 **Iframe Isolation**: Use `--iframe` mode for complex reports with conflicting CSS/JavaScript
+- 🎯 **Smart Sorting**: Sort by name, size, date, or preserve original order
+- 🚀 **Fast & Lightweight**: Single output file with no external dependencies
 
 ## Installation
 
-### PIPX
+### Quick Start with uvx (Recommended)
 
-Prefered method of installtion using pipx: <https://pypa.github.io/pipx/>
+The easiest way to use `htmltabs` is with `uvx`, which runs the tool in an isolated environment without installation:
 
-```
-pipx install git+https://github.com/MLKaufman/htmltabs
-```
-
-can aslo be installed with vanilla pip:
-
-```
-pipx install git+https://github.com/MLKaufman/htmltabs
+```bash
+uvx --from git+https://github.com/MLKaufman/htmltabs htmltabs ./reports
 ```
 
-Once installed can be run using the command:
-`htmltabs`
+### Install with uv
 
-### UVX
+For regular use, install with `uv`:
 
-The easiest possible way to run with `uvx`. Similar to `pipx`, `uvx` allows you to install and run Python packages in isolated environments without polluting your global Python environment.
+```bash
+# Install globally
+uv tool install git+https://github.com/MLKaufman/htmltabs
 
+# Or in a project
+uv add git+https://github.com/MLKaufman/htmltabs
 ```
-uvx git+https://github.com/MLKaufman/htmltabs
-```
 
-### UV
-Alternatively, you can install it using `uv` (Universal Virtual Environment) which is a cross-platform tool for managing Python environments.
+### Development Installation
 
-```
-uv venv 
-uv pip install --editable . 
-uv run htmltabs
+```bash
+git clone https://github.com/MLKaufman/htmltabs
+cd htmltabs
+uv venv
+uv pip install -e .
 ```
 
 ## Usage
@@ -62,6 +66,22 @@ htmltabs ./reports --recursive --theme dark
 # Custom file pattern and exclusions
 htmltabs ./data --pattern "*.htm" --exclude "*temp*" --exclude "*draft*"
 ```
+
+### Complex Reports (Cell Ranger, etc.)
+
+For complex HTML reports with JavaScript and CSS that conflict when merged, use the `--iframe` flag:
+
+```bash
+# Merge Cell Ranger reports with full isolation
+htmltabs ./cellranger_outputs --iframe --force
+
+# Combine multiple bioinformatics reports
+htmltabs ./analysis --recursive --iframe --theme dark
+```
+
+The `--iframe` mode embeds each HTML file in an isolated iframe, preventing CSS and JavaScript conflicts while keeping everything in a single file.
+
+## Options Reference
 
 ### Arguments
 
@@ -93,6 +113,12 @@ htmltabs ./data --pattern "*.htm" --exclude "*temp*" --exclude "*draft*"
 | `--tab-position` | | Tab position: top, bottom, left, right | `top` |
 | `--custom-css` | `-c` | Path to custom CSS file to include | None |
 
+### Advanced Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--iframe` | Embed files using iframes (better for complex reports with JS/CSS) | `False` |
+
 ### Output Control
 
 | Option | Short | Description | Default |
@@ -109,7 +135,7 @@ htmltabs ./data --pattern "*.htm" --exclude "*temp*" --exclude "*draft*"
 | `--full-path` | Use full file path as tab name instead of just filename | `False` |
 | `--strip-ext/--keep-ext` | Strip/keep file extensions from tab names | `True` (strip) |
 
-### Advanced Examples
+## Advanced Examples
 
 ```bash
 # Recursive scan with custom sorting and dark theme
@@ -129,4 +155,26 @@ htmltabs ./nested --recursive --full-path --keep-ext
 
 # Force overwrite existing output with quiet mode
 htmltabs ./data combined.html --force --quiet
+
+# Complex bioinformatics pipeline outputs with iframe isolation
+htmltabs ./pipeline_results --recursive --iframe --sort-by date --theme dark
 ```
+
+## When to Use `--iframe` Mode
+
+Use the `--iframe` flag when:
+
+- ✅ Merging complex reports like Cell Ranger, MultiQC, or other bioinformatics tools
+- ✅ HTML files have conflicting CSS class names or IDs
+- ✅ JavaScript code relies on specific DOM structures or global variables
+- ✅ Reports use interactive visualizations (Plotly, D3.js, etc.)
+
+Use the default mode (without `--iframe`) when:
+
+- ✅ Merging simple HTML reports or static content
+- ✅ You want a smaller output file size
+- ✅ Reports don't have conflicting styles or scripts
+
+## License
+
+MIT
